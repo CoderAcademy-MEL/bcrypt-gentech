@@ -1,5 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
+// models
+const User = require('../models/User');
 
 router.post('/registration', express.json(), async (req, res) => {
   try {
@@ -10,8 +15,10 @@ router.post('/registration', express.json(), async (req, res) => {
       password: hash
     })
     const savedUser = await newUser.save();
-    res.send(savedUser)
+    const token = jwt.sign({_id: savedUser._id}, process.env.JWT_SECRET);
+    res.send(token)
   } catch(err) {
+    console.log(err)
     res.status(500).send(err)
   }
 })
